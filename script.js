@@ -1,12 +1,9 @@
 /* =============================================
    TypeMe — script.js
-   MBTI 성격 테스트 로직
+   MBTI 성격 테스트 로직 (수정본)
    ============================================= */
 
 // ─── 질문 데이터 (10문항) ───────────────────────────────
-// 각 질문은 E/I, N/S, T/F, J/P 4개 차원 측정
-// dimension: EI, NS, TF, JP
-// A → 앞 글자(E/N/T/J), B → 뒤 글자(I/S/F/P)
 const questions = [
   {
     id: 1,
@@ -84,7 +81,7 @@ const questions = [
 const results = {
   ENFP: {
     emoji: "✨",
-    name: "활동가",
+    name: "열정적인 활동가",
     color: "#6c63ff",
     description: "ENFP는 자유롭고 창의적인 영혼의 소유자입니다. 항상 새로운 아이디어와 가능성을 탐구하며, 사람들과의 연결에서 에너지를 얻습니다. 열정적이고 낙관적이며, 어디서든 재미와 의미를 찾아냅니다. 규칙보다는 영감을 따르며, 세상을 더 나은 곳으로 만들고 싶어합니다.",
     strengths: ["뛰어난 공감 능력", "창의적 문제 해결", "카리스마와 열정", "적응력과 유연성"],
@@ -94,13 +91,13 @@ const results = {
     celebs: [
       { name: "로버트 다우니 주니어", field: "배우", emoji: "🦸" },
       { name: "방탄소년단 RM", field: "뮤지션", emoji: "🎤" },
-      { name: "로빈 윌리엄스", field: "배우/코미디언", emoji: "😄" },
+      { name: "로빈 윌리엄스", field: "코미디언", emoji: "😄" },
       { name: "엘렌 드제너러스", field: "방송인", emoji: "🎭" }
     ]
   },
   INTJ: {
     emoji: "🧠",
-    name: "전략가",
+    name: "용의주도한 전략가",
     color: "#ff4444",
     description: "INTJ는 독립적이고 결단력 있는 전략가입니다. 복잡한 문제를 분석하고 장기적인 계획을 세우는 데 탁월합니다. 높은 기준을 가지고 있으며, 효율성과 논리를 중시합니다. 내면에 풍부한 세계를 가지고 있지만, 목표 달성을 위해 냉철하게 행동합니다.",
     strengths: ["전략적 사고력", "독립심과 자율성", "높은 집중력", "목표 지향적"],
@@ -116,7 +113,7 @@ const results = {
   },
   INFJ: {
     emoji: "🌿",
-    name: "옹호자",
+    name: "선의의 옹호자",
     color: "#00c874",
     description: "INFJ는 깊은 통찰력과 강한 이상을 가진 가장 희귀한 유형입니다. 타인을 돕고 세상을 개선하는 데 깊은 사명감을 느낍니다. 직관적으로 사람의 감정과 동기를 파악하며, 진정성 있는 관계를 중시합니다. 꿈꾸는 이상주의자이자 실행하는 완벽주의자입니다.",
     strengths: ["깊은 공감과 직관", "창의적 통찰력", "강한 신념과 원칙", "헌신적인 태도"],
@@ -132,7 +129,7 @@ const results = {
   },
   ESFP: {
     emoji: "🎭",
-    name: "연예인",
+    name: "자유로운 연예인",
     color: "#ff8c00",
     description: "ESFP는 자발적이고 활기차며, 삶을 무대로 여기는 유형입니다. 현재 순간을 즐기는 능력이 탁월하고, 주변 사람들에게 즐거움과 에너지를 전파합니다. 실용적이고 현실적이면서도 감각적인 아름다움을 사랑합니다. 어떤 상황에서도 분위기를 살리는 타고난 엔터테이너입니다.",
     strengths: ["뛰어난 사교성", "강한 현재 집중력", "실용적 문제해결", "풍부한 감각"],
@@ -141,8 +138,8 @@ const results = {
     compatBad: ["INTJ", "ENTJ"],
     celebs: [
       { name: "브루노 마스", field: "뮤지션", emoji: "🎸" },
-      { name: "제니 (블랙핑크)", field: "아이돌", emoji: "💎" },
-      { name: "리오나르도 디카프리오", field: "배우", emoji: "🏆" },
+      { name: "제니", field: "아이돌", emoji: "💎" },
+      { name: "레오나르도 디카프리오", field: "배우", emoji: "🏆" },
       { name: "케이티 페리", field: "가수", emoji: "🎤" }
     ]
   }
@@ -167,15 +164,23 @@ function showPage(name) {
   window.scrollTo(0, 0);
 }
 
+function showToast() {
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
+}
+
 // ─── MBTI 계산 ───────────────────────────────────────────
 function calculateMBTI() {
   const score = { E:0, I:0, N:0, S:0, T:0, F:0, J:0, P:0 };
 
   answers.forEach((ans, idx) => {
     const q = questions[idx];
-    const dim = q.dimension; // e.g. "EI"
-    const first = dim[0];   // E
-    const second = dim[1];  // I
+    const dim = q.dimension; 
+    const first = dim[0];   
+    const second = dim[1];  
     if (ans === 'A') score[first]++;
     else             score[second]++;
   });
@@ -186,25 +191,18 @@ function calculateMBTI() {
   const J_or_P = score.J >= score.P ? 'J' : 'P';
 
   const mbti = E_or_I + N_or_S + T_or_F + J_or_P;
-
-  // 4가지 대표 유형으로 매핑
   return mapToResult(mbti);
 }
 
 function mapToResult(mbti) {
   if (mbti in results) return mbti;
-
-  // 가장 가까운 결과 유형으로 매핑
+  
   const mapping = {
-    // ENFP 계열
     'ENFJ': 'INFJ', 'INFP': 'ENFP', 'ENTP': 'ENFP',
-    // INTJ 계열
     'INTP': 'INTJ', 'ENTJ': 'INTJ', 'ISFP': 'INFJ',
-    // INFJ 계열
     'ISFJ': 'INFJ', 'ISTP': 'INTJ',
-    // ESFP 계열
     'ESTP': 'ESFP', 'ESFJ': 'ESFP', 'ISTJ': 'INTJ',
-    'ESTJ': 'ESFP', 'ISFJ': 'INFJ'
+    'ESTJ': 'ESFP'
   };
   return mapping[mbti] || 'ENFP';
 }
@@ -214,36 +212,35 @@ function renderQuestion(idx) {
   const q = questions[idx];
   const total = questions.length;
 
-  // 카드 애니메이션 리셋
   const card = document.getElementById('questionCard');
   card.style.animation = 'none';
-  card.offsetHeight; // reflow
+  card.offsetHeight; 
   card.style.animation = '';
 
-  document.getElementById('questionNum').textContent = idx + 1;
-  document.getElementById('questionTotal').textContent = total;
-  document.getElementById('qNumber').textContent = `Q.${String(idx + 1).padStart(2, '0')}`;
+  document.getElementById('qNum').textContent = idx + 1;
+  document.getElementById('qTotal').textContent = total;
+  document.getElementById('qLabel').textContent = `Q.${String(idx + 1).padStart(2, '0')}`;
   document.getElementById('qText').textContent = q.text;
-  document.getElementById('choiceAText').textContent = q.a;
-  document.getElementById('choiceBText').textContent = q.b;
+  
+  // HTML ID에 맞게 수정됨
+  const btnA = document.getElementById('choiceA');
+  const btnB = document.getElementById('choiceB');
+  btnA.textContent = q.a;
+  btnB.textContent = q.b;
 
-  // 진행률 바
   const pct = ((idx) / total) * 100;
   document.getElementById('progressFill').style.width = pct + '%';
 
-  // 선택 상태 복원
   const saved = answers[idx];
   selectedValue = saved || null;
 
-  const btnA = document.getElementById('choiceA');
-  const btnB = document.getElementById('choiceB');
   btnA.classList.toggle('selected', saved === 'A');
   btnB.classList.toggle('selected', saved === 'B');
 
-  // 버튼 상태
-  document.getElementById('btnPrev').disabled = idx === 0;
-  document.getElementById('btnNext').disabled = !saved;
-  document.getElementById('btnNext').textContent = idx === total - 1 ? '결과 보기 →' : '다음 →';
+  // HTML ID에 맞게 수정됨
+  document.getElementById('prevBtn').disabled = idx === 0;
+  document.getElementById('nextBtn').disabled = !saved;
+  document.getElementById('nextBtn').textContent = idx === total - 1 ? '결과 보기 →' : '다음 →';
 }
 
 function selectAnswer(value) {
@@ -252,9 +249,8 @@ function selectAnswer(value) {
 
   document.getElementById('choiceA').classList.toggle('selected', value === 'A');
   document.getElementById('choiceB').classList.toggle('selected', value === 'B');
-  document.getElementById('btnNext').disabled = false;
+  document.getElementById('nextBtn').disabled = false;
 
-  // 자동 진행 (약간의 딜레이)
   setTimeout(() => {
     if (currentQuestion < questions.length - 1) {
       currentQuestion++;
@@ -267,45 +263,29 @@ function selectAnswer(value) {
 function renderResult(mbtiKey) {
   const data = results[mbtiKey];
 
-  // 히어로
-  document.getElementById('resultEmoji').textContent = data.emoji;
-  document.getElementById('resultTypeCode').textContent = mbtiKey;
-  document.getElementById('resultTypeName').textContent = data.name;
-
-  // 배경 색상
+  // HTML ID에 맞게 전체 매핑 수정
+  document.getElementById('resultType').textContent = mbtiKey;
+  document.getElementById('resultNickname').textContent = data.emoji + " " + data.name;
+  
   document.getElementById('resultBg').style.background =
     `radial-gradient(ellipse at top, ${data.color}33, transparent 60%)`;
 
-  // 설명
   document.getElementById('resultDesc').textContent = data.description;
 
-  // 강점 / 약점
-  const strengthsEl = document.getElementById('resultStrengths');
-  const weaknessesEl = document.getElementById('resultWeaknesses');
-  strengthsEl.innerHTML = data.strengths.map(s => `<li>${s}</li>`).join('');
-  weaknessesEl.innerHTML = data.weaknesses.map(w => `<li>${w}</li>`).join('');
+  document.getElementById('strengthList').innerHTML = data.strengths.map(s => `<li>${s}</li>`).join('');
+  document.getElementById('weaknessList').innerHTML = data.weaknesses.map(w => `<li>${w}</li>`).join('');
 
-  // 궁합
   document.getElementById('compatGood').innerHTML =
     data.compatGood.map(t => `<span class="compat-tag">${t}</span>`).join('');
   document.getElementById('compatBad').innerHTML =
     data.compatBad.map(t => `<span class="compat-tag">${t}</span>`).join('');
 
-  // 유명인
-  const celebsGrid = document.getElementById('celebsGrid');
-  celebsGrid.innerHTML = data.celebs.map(c => `
-    <div class="celeb-card">
-      <div class="celeb-emoji">${c.emoji}</div>
-      <div class="celeb-name">${c.name}</div>
-      <div class="celeb-field">${c.field}</div>
+  document.getElementById('celebList').innerHTML = data.celebs.map(c => `
+    <div class="celeb-item">
+      <span class="celeb-emoji">${c.emoji}</span>
+      <span>${c.name} (${c.field})</span>
     </div>
   `).join('');
-
-  // 공유 모달 데이터 세팅
-  document.getElementById('shareEmoji').textContent = data.emoji;
-  document.getElementById('shareCode').textContent = mbtiKey;
-  document.getElementById('shareName').textContent = data.name;
-  document.getElementById('shareTagline').textContent = `나는 ${mbtiKey} ${data.name}입니다`;
 }
 
 // ─── 리셋 ───────────────────────────────────────────────
@@ -317,23 +297,26 @@ function resetTest() {
 
 // ─── 이벤트 바인딩 ─────────────────────────────────────────
 
-// 랜딩 → 테스트
-document.getElementById('btnStart').addEventListener('click', () => {
+// 랜딩 → 테스트 (HTML ID: startBtn 으로 수정)
+document.getElementById('startBtn').addEventListener('click', () => {
   resetTest();
   showPage('test');
   renderQuestion(0);
 });
 
-// 홈 버튼
-document.getElementById('btnHomeFromTest').addEventListener('click', () => showPage('landing'));
-document.getElementById('btnHomeFromResult').addEventListener('click', () => showPage('landing'));
+// 테스트 나가기 버튼
+document.getElementById('quitBtn').addEventListener('click', () => {
+  if(confirm("테스트를 종료하시겠습니까?")) {
+    showPage('landing');
+  }
+});
 
 // 선택지 버튼
 document.getElementById('choiceA').addEventListener('click', () => selectAnswer('A'));
 document.getElementById('choiceB').addEventListener('click', () => selectAnswer('B'));
 
 // 이전 버튼
-document.getElementById('btnPrev').addEventListener('click', () => {
+document.getElementById('prevBtn').addEventListener('click', () => {
   if (currentQuestion > 0) {
     currentQuestion--;
     renderQuestion(currentQuestion);
@@ -341,17 +324,14 @@ document.getElementById('btnPrev').addEventListener('click', () => {
 });
 
 // 다음 버튼
-document.getElementById('btnNext').addEventListener('click', () => {
+document.getElementById('nextBtn').addEventListener('click', () => {
   if (!answers[currentQuestion]) return;
 
   if (currentQuestion < questions.length - 1) {
     currentQuestion++;
     renderQuestion(currentQuestion);
   } else {
-    // 마지막 질문 → 결과
     const mbtiKey = calculateMBTI();
-
-    // 진행률 100%
     document.getElementById('progressFill').style.width = '100%';
 
     setTimeout(() => {
@@ -361,62 +341,32 @@ document.getElementById('btnNext').addEventListener('click', () => {
   }
 });
 
-// 다시 테스트
-document.getElementById('btnRestart').addEventListener('click', () => {
+// 다시 테스트하기 (HTML ID: retryBtn)
+document.getElementById('retryBtn').addEventListener('click', () => {
   resetTest();
   showPage('test');
   renderQuestion(0);
 });
 
-// 공유 버튼
-document.getElementById('btnShare').addEventListener('click', () => {
-  document.getElementById('shareModal').classList.add('active');
-});
-
-// 모달 닫기
-document.getElementById('modalClose').addEventListener('click', () => {
-  document.getElementById('shareModal').classList.remove('active');
-});
-document.getElementById('shareModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('shareModal')) {
-    document.getElementById('shareModal').classList.remove('active');
-  }
-});
-
-// 공유 버튼들
-document.getElementById('btnKakao').addEventListener('click', () => {
-  alert('카카오톡 공유 기능은 API 연동 후 이용 가능합니다.');
-});
-document.getElementById('btnTwitter').addEventListener('click', () => {
-  const code = document.getElementById('shareCode').textContent;
-  const name = document.getElementById('shareName').textContent;
-  const text = encodeURIComponent(`나의 MBTI 유형은 ${code} ${name}입니다! TypeMe에서 테스트해보세요 🎯`);
-  window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
-});
-document.getElementById('btnCopy').addEventListener('click', () => {
+// 결과 공유하기 (HTML에 모달이 없으므로 Toast 메시지로 대체)
+document.getElementById('shareBtn').addEventListener('click', () => {
   navigator.clipboard.writeText(window.location.href).then(() => {
-    const btn = document.getElementById('btnCopy');
-    const original = btn.textContent;
-    btn.textContent = '✅ 복사됨!';
-    setTimeout(() => { btn.textContent = original; }, 2000);
+    showToast();
   }).catch(() => {
-    alert('링크가 복사되었습니다: ' + window.location.href);
+    alert('링크 복사에 실패했습니다.');
   });
 });
 
-// 키보드 단축키 (A/B 선택)
+// 키보드 단축키
 document.addEventListener('keydown', (e) => {
   if (pages.test.classList.contains('active')) {
-    if (e.key === 'a' || e.key === 'A') selectAnswer('A');
-    if (e.key === 'b' || e.key === 'B') selectAnswer('B');
-    if (e.key === 'ArrowRight' && !document.getElementById('btnNext').disabled) {
-      document.getElementById('btnNext').click();
+    if (e.key === 'a' || e.key === 'A' || e.key === '1') selectAnswer('A');
+    if (e.key === 'b' || e.key === 'B' || e.key === '2') selectAnswer('B');
+    if (e.key === 'ArrowRight' && !document.getElementById('nextBtn').disabled) {
+      document.getElementById('nextBtn').click();
     }
     if (e.key === 'ArrowLeft') {
-      document.getElementById('btnPrev').click();
+      document.getElementById('prevBtn').click();
     }
-  }
-  if (e.key === 'Escape') {
-    document.getElementById('shareModal').classList.remove('active');
   }
 });
