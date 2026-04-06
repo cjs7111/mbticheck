@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TypeMe — 나의 성격 유형을 발견하세요</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════ LANDING PAGE -->
+  <div id="page-landing" class="page active">
+    <div class="noise-overlay"></div>
+    <div class="bg-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
+
+    <nav class="nav">
+      <div class="logo">TYPE<span>ME</span></div>
+    </nav>
+
+    <main class="landing-main">
+      <div class="landing-badge">✦ 성격 유형 테스트 ✦</div>
+      <h1 class="landing-title">
+        <span class="line-1">당신은</span>
+        <span class="line-2">어떤 사람인가요?</span>
+      </h1>
+      <p class="landing-sub">10개의 질문으로 발견하는 나만의 성격 코드.<br />유명인과 비교하고, 친구와 공유해보세요.</p>
+      <button class="cta-btn" id="startBtn">
+        테스트 시작하기
+        <span class="btn-arrow">→</span>
+      </button>
+
+      <div class="preview-types">
+        <p class="preview-label">오늘의 인기 유형</p>
+        <div class="preview-chips">
+          <div class="chip chip--enfp"><span class="chip-type">ENFP</span><span class="chip-name">활동가</span></div>
+          <div class="chip chip--intj"><span class="chip-type">INTJ</span><span class="chip-name">전략가</span></div>
+          <div class="chip chip--infj"><span class="chip-type">INFJ</span><span class="chip-name">옹호자</span></div>
+          <div class="chip chip--esfp"><span class="chip-type">ESFP</span><span class="chip-name">연예인</span></div>
+        </div>
+      </div>
+    </main>
+
+    <div class="ticker-wrap">
+      <div class="ticker">
+        <span>ENFP &nbsp;·&nbsp; INTJ &nbsp;·&nbsp; INFJ &nbsp;·&nbsp; ESFP &nbsp;·&nbsp; ENFJ &nbsp;·&nbsp; ISTP &nbsp;·&nbsp; ENTJ &nbsp;·&nbsp; ISFP &nbsp;·&nbsp;</span>
+        <span>ENFP &nbsp;·&nbsp; INTJ &nbsp;·&nbsp; INFJ &nbsp;·&nbsp; ESFP &nbsp;·&nbsp; ENFJ &nbsp;·&nbsp; ISTP &nbsp;·&nbsp; ENTJ &nbsp;·&nbsp; ISFP &nbsp;·&nbsp;</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ TEST PAGE -->
+  <div id="page-test" class="page">
+    <div class="noise-overlay"></div>
+    <div class="bg-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+    </div>
+
+    <nav class="nav nav--test">
+      <div class="logo">TYPE<span>ME</span></div>
+      <button class="quit-btn" id="quitBtn">✕ 나가기</button>
+    </nav>
+
+    <div class="test-container">
+      <div class="progress-wrap">
+        <div class="progress-info">
+          <span id="qNum">1</span> / <span id="qTotal">10</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <div class="question-card" id="questionCard">
+        <div class="q-number" id="qLabel">Q01</div>
+        <p class="q-text" id="qText">질문을 불러오는 중...</p>
+        <div class="choices">
+          <button class="choice-btn" id="choiceA" data-choice="A"></button>
+          <div class="vs-divider">VS</div>
+          <button class="choice-btn" id="choiceB" data-choice="B"></button>
+        </div>
+      </div>
+
+      <div class="nav-btns">
+        <button class="nav-btn nav-btn--prev" id="prevBtn">← 이전</button>
+        <button class="nav-btn nav-btn--next" id="nextBtn" disabled>다음 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ RESULT PAGE -->
+  <div id="page-result" class="page">
+    <div class="noise-overlay"></div>
+    <div class="result-bg" id="resultBg"></div>
+
+    <nav class="nav">
+      <div class="logo">TYPE<span>ME</span></div>
+    </nav>
+
+    <div class="result-container">
+      <div class="result-header">
+        <p class="result-caption">당신의 성격 유형은</p>
+        <div class="result-type-wrap">
+          <h2 class="result-type" id="resultType">ENFP</h2>
+          <div class="type-glow" id="typeGlow"></div>
+        </div>
+        <p class="result-nickname" id="resultNickname">열정적인 활동가</p>
+      </div>
+
+      <div class="result-body">
+        <div class="result-card card-desc">
+          <div class="card-icon">🧠</div>
+          <h3>성격 설명</h3>
+          <p id="resultDesc"></p>
+        </div>
+
+        <div class="result-row">
+          <div class="result-card card-good">
+            <div class="card-icon">👍</div>
+            <h3>잘 맞는 유형</h3>
+            <div class="compat-types" id="compatGood"></div>
+          </div>
+          <div class="result-card card-bad">
+            <div class="card-icon">👎</div>
+            <h3>주의할 유형</h3>
+            <div class="compat-types" id="compatBad"></div>
+          </div>
+        </div>
+
+        <div class="result-card card-celeb">
+          <div class="card-icon">⭐</div>
+          <h3>같은 유형 유명인</h3>
+          <div class="celeb-list" id="celebList"></div>
+        </div>
+
+        <div class="result-card card-traits">
+          <div class="card-icon">💡</div>
+          <h3>강점 &amp; 약점</h3>
+          <div class="traits-wrap">
+            <div class="trait-col">
+              <p class="trait-label strength">💪 강점</p>
+              <ul id="strengthList"></ul>
+            </div>
+            <div class="trait-col">
+              <p class="trait-label weakness">⚠️ 약점</p>
+              <ul id="weaknessList"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="action-btn action-btn--share" id="shareBtn">🔗 결과 공유하기</button>
+        <button class="action-btn action-btn--retry" id="retryBtn">↺ 다시 테스트하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">링크가 복사되었습니다! 📋</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
